@@ -1,0 +1,292 @@
+# CSC311 Study Guide
+
+[TOC]
+
+
+
+## Lec 6: SVMs and Ensembles
+
+#### Hinge Loss
+
+$\mathcal{L}_H(z, t) = max\{0, 1-zt\}$
+
+Intuition: $y < 1$ 时，penalize more. Otherwise, loss $=0$.
+
+#### SVMs
+
+- Idea: Attempt to find a hyperplane with maximum distance that separates two classes. 
+- Given labeled training data, output an classifier that is the optimal class separator that can categorize new examples. 
+
+- Uses **Hinge loss**
+
+#### Ensembles
+
+##### Bagging
+
+- Train classifiers on randomly independently selected subsamples of the training data. 
+- Reduce variance
+
+##### Boosting
+
+- Reduces bias by generating an ensemble of weak classifiers
+- Each classifer is trained to reduce error from previous example
+- increase variance
+
+
+
+<u>*Weighted Training Set*</u>
+
+Some training sets are given more weights than others, e.g., used to emphasize training on a type of mistake, usually with $w^{(n)} > 0, \sum^N_{n=1} w^{(n)} = 1$ .
+
+$\frac{1}{N} \sum^N_{n=1} \mathbb{I}[h(x^{(n)}) \neq t^{(n)}] $  **vs.** $\frac{1}{N} \sum^N_{n=1} \mathbb{I} [ w^{(n)} h(x^{(n)}) \neq t^{(n)}] $
+
+
+
+<u>*Weak Learner/Classifier*</u>
+
+An efficient learning algorithm that outputs predictions using decision stump that are slightly better than random. 
+
+###### Adaptive Boosting (AdaBoost)
+
+```text
+1. Initialize weights to be 1/n
+2. Using weighted data, fit weak classifiers and select the one with min error
+3. Compute weighted error 
+4. Update data weights: weak classifiers with lower weighted error get more weight in the final classifier
+```
+
+
+
+## Lec 7: Probabilistic Models
+
+
+
+$p(t \mid \mathbf{x})$ - estimate parameters of decision boundary separator directly from labeled examples
+
+$p(\mathbf{x} \mid t)$ - model the distribution of inputs and get what each class look like
+
+
+
+#### Naive Bayes
+
+Assumes $x_i$ and $x_j$ are independent given the class $c$ 
+
+$$p(c, x_1, ..., x_D) = p(c) p (x_1\mid c) \dots p(x_D\mid c)$$
+
+
+
+1. Train: estimate parameters using maximum likelihood
+2. Test: apply Bayes' Rule
+
+
+
+##### Issues
+
+May overfit if data is too little
+
+
+
+#### Gaussian Discriminative Analysis
+
+A generative model that makes strong modeling assumption that class-conditional data is multivariate Gaussian
+
+
+
+
+
+
+
+## Lec 8: Principal Component Analysis
+
+
+
+Want to map the data to a lower dimensional space to 
+
+- Save computation / memory
+- Reduce overfitting, achieve better generalization
+- visualize better
+
+
+
+Goal: find a $K$-dimensional subspace $\mathcal{S} \subset \mathbb{R}^D$ such that $\mathbf{x}^{(n)} - \hat{\mathbf{\mu}}$ is well represented by its projection onto a $K$-dimensional  $\mathcal{S} $ .
+
+- Need to project data onto a subspace that:
+  - Minimize reconstruction error
+  - Maximize the variance of reconstructions
+- Maximizing the variance is equivalent to minimizing the reconstruction error
+
+
+
+#### Principal Components
+
+The optimal PCA subspace is spanned by the top $K$ eigenvectors of $\hat{\Sigma}$ . These eigenvectors are called principal components, just choose the first $K$ of any orthonormal eigenbasis for $\hat{\Sigma}$. 
+
+
+
+#### Autoencoders
+
+Encoder: input $\Rightarrow$ some linear operations $\Rightarrow$ low-dimension representation
+
+Decoder: low-dimension representation $\Rightarrow$ some linear operations $\Rightarrow$ reconstructed input
+
+
+
+The best possible $K$-dimensional subspace that minimizes reconstruction error is the PCA subspace. So the linear autoencoder are just the principal components. 
+
+
+
+
+
+
+
+## Lec 9: $K$-Means and EM Algorithm
+
+
+
+**Clustering**: grouping data points into clusters with no observed labels
+
+
+
+#### $K$-Means 
+
+Find cluster centers $\{\mathbf{m}_k \}^K_{k=1}$ and assignments $ \{\mathbf{r}^{(n)} \}^N_{n=1}$ that minimize the sum of squared distances of data points $ \{\mathbf{x}^{(n)} \} $ to their assigned cluster centers. 
+
+We can:
+
+- Fix the assignments $ \{\mathbf{r}^{(n)} \}$ and find optimal centers $ \{\mathbf{m}_k \}$ 
+- Fix the assignments  $ \{\mathbf{m}_k \}$ and find optimal centers $ \{\mathbf{r}^{(n)} \}$ 
+
+
+
+##### Algorithm
+
+```
+1. Intialize cluster centers randomly
+2. Iteratively alternates
+		1) Assignment: assign each data point to the closest cluster
+		2) Refitting: move each cluster center to the mean of the 				 data assigned to it
+```
+
+
+
+##### Soft $K$-Means
+
+Each data point is given soft degree of assignments to each cluster mean, based on responsibilities
+
+
+
+#### Gaussian Mixture Model
+
+$\pi_k$ captures the relative proportion of each cluster in the dataset. 
+
+**Prior**: without observing the image content, what is the probability that image $i$ is from cluster $k$?
+
+​							$p(z_i = k) = \pi_k$
+
+**Likelihood**: given observation of $\mathbf{x}_i$ is from cluster $k$, what is the likelihood of seeing  $\mathbf{x}_i$?
+
+​						$p(x_i \mid z_i = k , \mu_k, \Sigma_k) = \mathcal{N}(x_i \mid \mu_k, \Sigma_k )$
+
+
+
+
+
+
+
+##### Expectation-Maximization algorithm
+
+1. E-step: given our current model how much do we think a cluster is responsible for generating a datapoint
+   - Compute $\mathbb{E} \Big[ \mathbb{I}[z^{(n)} = k \mid \mathbf{x}^{(n)} ; \pi_k, \mathbf{\mu}_k] \Big]$ 
+2. M-step:  update $\pi_k, \mathbf{\mu}_k$  of each Gaussian to maximize the probability that it would generate the data it is currently responsible for
+
+
+
+
+
+## Lec 10: Matrix Factorizations & Recommender Systems
+
+PCA with $K$ principal components finds the optimal rank-$K$ approximation of $\mathbf{X} \in \mathbb{R}^{N \times D}$ using two smaller matrices $\mathbf{U}  \in D \times K$ and $\mathbf{Z} \in N \times K$. 
+
+​						$\min \Vert \mathbf{X}^T - \mathbf{UZ}^T \Vert^2_F$ 
+
+
+
+#### Matrix Completion
+
+$\mathbf{X}$ is partially observed, wants to fill in missing values.
+
+
+
+##### Alternating Least Squares
+
+​					$\min_{\mathbf{U}, \mathbf{Z}} \frac{1}{2} \sum_{(n, m) \in O} (R_{nm} - \mathbf{u}_n^T\mathbf{z}_m )^2$
+
+fix $\mathbf{Z}$ and optimize $\mathbf{U}$, followed by fix $\mathbf{U}$ and optimize $\mathbf{Z}$ until convergence. 
+
+
+
+##### Gradient descent
+
+Minimize $f(\mathbf{U}, \mathbf{Z})$ treating both $\mathbf{U}, \mathbf{Z}$ as variables. 
+$$
+\begin{bmatrix}
+     \mathbf{U}\\
+     \mathbf{Z}      
+\end{bmatrix} \leftarrow
+\begin{bmatrix}
+     \mathbf{U}\\
+     \mathbf{Z}      
+\end{bmatrix} - \alpha \nabla f(\mathbf{U}, \mathbf{Z})
+$$
+This is expensive.
+
+
+
+##### Stochastic gradient descent
+
+Randomly select $n, m$ in $\mathbf{R}$ to update $\mathbf{u}_n$ and $\mathbf{z}_m$ attempting to minimize $\frac{1}{2} \sum_{(n, m) \in O} (R_{nm} - \mathbf{u}_n^T\mathbf{z}_m )^2$
+
+
+$$
+\begin{bmatrix}
+     \mathbf{u}_n\\
+     \mathbf{z}_m      
+\end{bmatrix} \leftarrow
+\begin{bmatrix}
+    \mathbf{u}_n\\
+     \mathbf{z}_m      
+\end{bmatrix} - \alpha 
+\begin{bmatrix}
+    (R_{nm} - \mathbf{u}_n^T\mathbf{z}_m) \mathbf{z}_m\\
+    (R_{nm} - \mathbf{u}_n^T\mathbf{z}_m)  \mathbf{u}_n\\    
+\end{bmatrix}
+$$
+
+#### Other models
+
+**$K$-Means**
+
+View $K$-Means as a mmatrix factorization. 
+
+1. Stack assignments $\mathbf{r}_i$ into $\mathbf{R}$, and stack cluster centers $\mathbf{m}_k$ into $\mathbf{M}$. 
+
+2. Reconstruction of data given by $\mathbf{RM}$
+
+
+
+**Co-clustering**
+
+
+
+![Matrix co-clustering can reveal the latent structure. Discovered 'white spots' within a co-cluster can be coupled with a recommendation process. ](https://www.researchgate.net/profile/Charalampos_Mavroforakis/publication/268076495/figure/fig1/AS:613933857660938@1523384646153/Matrix-co-clustering-can-reveal-the-latent-structure-Discovered-white-spots-within-a.png)
+
+
+
+**Sparse Coding**
+$$
+\min_{\mathbf{s}} \Vert \mathbf{x - As} \Vert^2 + \beta \Vert \mathbf{s} \Vert_1
+$$
+Learn a dictionary, uses $\beta$ to trade off reconstruction error vs. sparsity. 
+
+
+
