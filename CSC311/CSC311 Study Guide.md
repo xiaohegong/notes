@@ -4,13 +4,17 @@
 
 
 
+
+
 ## Lec 6: SVMs and Ensembles
 
 #### Hinge Loss
 
-$\mathcal{L}_H(z, t) = max\{0, 1-zt\}$
+$$
+\mathcal{L}_H(z, t) = max\{0, 1-zt\}
+$$
 
-Intuition: $y < 1$ 时，penalize more. Otherwise, loss $=0$.
+Intuition: when $y < 1$ , penalize more. Otherwise, loss $=0$.
 
 #### SVMs
 
@@ -37,9 +41,11 @@ Intuition: $y < 1$ 时，penalize more. Otherwise, loss $=0$.
 <u>*Weighted Training Set*</u>
 
 Some training sets are given more weights than others, e.g., used to emphasize training on a type of mistake, usually with $w^{(n)} > 0, \sum^N_{n=1} w^{(n)} = 1$ .
-
-$\frac{1}{N} \sum^N_{n=1} \mathbb{I}[h(x^{(n)}) \neq t^{(n)}] $  **vs.** $\frac{1}{N} \sum^N_{n=1} \mathbb{I} [ w^{(n)} h(x^{(n)}) \neq t^{(n)}] $
-
+$$
+\frac{1}{N} \sum^N_{n=1} \mathbb{I}[h(x^{(n)}) \neq t^{(n)}] 
+\text{  vs. } 
+\frac{1}{N} \sum^N_{n=1} \mathbb{I} [ w^{(n)} h(x^{(n)}) \neq t^{(n)}]
+$$
 
 
 <u>*Weak Learner/Classifier*</u>
@@ -70,10 +76,9 @@ $p(\mathbf{x} \mid t)$ - model the distribution of inputs and get what each clas
 #### Naive Bayes
 
 Assumes $x_i$ and $x_j$ are independent given the class $c$ 
-
-$$p(c, x_1, ..., x_D) = p(c) p (x_1\mid c) \dots p(x_D\mid c)$$
-
-
+$$
+p(c, x_1, ..., x_D) = p(c) p (x_1\mid c) \dots p(x_D\mid c)
+$$
 
 1. Train: estimate parameters using maximum likelihood
 2. Test: apply Bayes' Rule
@@ -89,12 +94,6 @@ May overfit if data is too little
 #### Gaussian Discriminative Analysis
 
 A generative model that makes strong modeling assumption that class-conditional data is multivariate Gaussian
-
-
-
-
-
-
 
 ## Lec 8: Principal Component Analysis
 
@@ -135,10 +134,6 @@ The best possible $K$-dimensional subspace that minimizes reconstruction error i
 
 
 
-
-
-
-
 ## Lec 9: $K$-Means and EM Algorithm
 
 
@@ -164,7 +159,7 @@ We can:
 1. Intialize cluster centers randomly
 2. Iteratively alternates
 		1) Assignment: assign each data point to the closest cluster
-		2) Refitting: move each cluster center to the mean of the 				 data assigned to it
+		2) Refitting: move each cluster center to the mean of the data assigned to it
 ```
 
 
@@ -184,13 +179,9 @@ $\pi_k$ captures the relative proportion of each cluster in the dataset.
 ​							$p(z_i = k) = \pi_k$
 
 **Likelihood**: given observation of $\mathbf{x}_i$ is from cluster $k$, what is the likelihood of seeing  $\mathbf{x}_i$?
-
-​						$p(x_i \mid z_i = k , \mu_k, \Sigma_k) = \mathcal{N}(x_i \mid \mu_k, \Sigma_k )$
-
-
-
-
-
+$$
+p(x_i \mid z_i = k , \mu_k, \Sigma_k) = \mathcal{N}(x_i \mid \mu_k, \Sigma_k )
+$$
 
 
 ##### Expectation-Maximization algorithm
@@ -199,16 +190,12 @@ $\pi_k$ captures the relative proportion of each cluster in the dataset.
    - Compute $\mathbb{E} \Big[ \mathbb{I}[z^{(n)} = k \mid \mathbf{x}^{(n)} ; \pi_k, \mathbf{\mu}_k] \Big]$ 
 2. M-step:  update $\pi_k, \mathbf{\mu}_k$  of each Gaussian to maximize the probability that it would generate the data it is currently responsible for
 
-
-
-
-
 ## Lec 10: Matrix Factorizations & Recommender Systems
 
 PCA with $K$ principal components finds the optimal rank-$K$ approximation of $\mathbf{X} \in \mathbb{R}^{N \times D}$ using two smaller matrices $\mathbf{U}  \in D \times K$ and $\mathbf{Z} \in N \times K$. 
-
-​						$\min \Vert \mathbf{X}^T - \mathbf{UZ}^T \Vert^2_F$ 
-
+$$
+\min \Vert \mathbf{X}^T - \mathbf{UZ}^T \Vert^2_F
+$$
 
 
 #### Matrix Completion
@@ -245,8 +232,6 @@ This is expensive.
 ##### Stochastic gradient descent
 
 Randomly select $n, m$ in $\mathbf{R}$ to update $\mathbf{u}_n$ and $\mathbf{z}_m$ attempting to minimize $\frac{1}{2} \sum_{(n, m) \in O} (R_{nm} - \mathbf{u}_n^T\mathbf{z}_m )^2$
-
-
 $$
 \begin{bmatrix}
      \mathbf{u}_n\\
@@ -290,3 +275,85 @@ Learn a dictionary, uses $\beta$ to trade off reconstruction error vs. sparsity.
 
 
 
+## Lec 11: Reinforcement Learning
+
+How should the agent choose its actions so that its long-term rewards are maximized?
+
+
+
+**Policy**
+
+$\pi \leftarrow$ the action selection mechanism that maps from states to actions
+
+- deterministic policy: $A_t = \pi(S_t)$
+- stochastic policy: $A_t \sim \pi(\cdot \mid S_t)$
+
+
+
+**Value function**
+
+$V^\pi \leftarrow$ ***state-value*** function, the expected discounted reward if the agent starts from state $s$ and follows policy $\pi$ 
+$$
+V^\pi = \mathbb{E}_\pi \Big[ \sum_{t \geq 0} \gamma^t R_t \mid S_0 = s\Big]
+$$
+$Q^\pi \leftarrow$ ***action-value*** function, the expected discounted reward if the agent starts from state $s$, takes action $a$, and then follows policy $\pi$
+$$
+\begin{align*}
+Q^\pi(s, a) &= \mathbb{E}_\pi \Big[ \sum_{t \geq 0} \gamma^t R_t \mid S_0 = s, A_0 = a \Big]\\
+&= r(s, a) + \gamma \int_{\mathcal{S}} Q^\pi (s', \pi(s')) \mathcal{P}(s' \mid s, a) \,ds'
+\end{align*}
+$$
+
+
+#### Optimal Value 
+
+Intuitively, want to solve
+$$
+Q^\pi(s, a)
+= r(s, a) + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}(s' \mid s, a) \max_{a' \in \mathcal{A}} Q^\pi (s', a') \quad \forall (s, a) \in  \mathcal{S} \times  \mathcal{A}
+$$
+
+##### Value Iteration
+
+$$
+Q_{k+1}(s, a) \leftarrow r(s, a) + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}(s' \mid s, a) \max_{a' \in \mathcal{A}} Q_k (s', a') 
+$$
+
+and obtain the optimal value function when converged. 
+
+*<u>Challenges</u>*: 
+
+1) challenging with large state space 
+
+2) do not always know $\mathcal{P}$ and $\mathcal{R}$
+
+
+
+##### Batch RL and Approximate Dynamic Programming
+
+Now consider the case with batch data such that $S_i, A_i, R_i$ all follow some distribution.
+
+Then we can define a random variable $t_i = R_i + \gamma \max_{a' \in \mathbb{A}} Q(S_i', a')$
+
+and $\mathbb{E}[t_i \mid S_i, A_i] = (T^*Q)(S_i, A_i)$ so $t_i$ is just the noisy version of $(T^*Q)(S_i, A_i)$. Estimating $Q_{k+1}$ becomes a regression problem.
+
+To calculate $Q_{k+1}$ we minimize the squared error of $Q$ against the regression $R_i + \gamma \max_{a' \in \mathbb{A}} Q_k(S_i', a)$ 
+
+*<u>Remarks</u>*:  a sequence of regression problems with target changing at each iteration, so the error may accumulate and cause divergence.
+
+
+
+##### Online RL
+
+The agent continually interacts with the environment and update itself with new knowledge of the world and its policy.
+
+###### Q-Learning
+
+$\rightarrow$ <u>*explore*</u> with probability $\epsilon$ : try other actions
+
+$\rightarrow$ *<u>exploit</u>* with probability $1-\epsilon$ : choose the best action from its current, incomplete knowledge of the world
+
+**Softmax Action Selection**
+$$
+\pi_\beta (S; Q) = A \sim \frac{\exp\{\beta Q(S, a)\}}{\sum_{a\in\mathcal{A} \exp\{\beta Q(S, a)\}}}
+$$
