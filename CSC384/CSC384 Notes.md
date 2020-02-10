@@ -204,3 +204,71 @@ If $A^*$ is consistent, then the first discovered path is the optimal one.
 
 
 
+## 2. Constraint Satisfaction Problems (CSP)
+
+Want to find a set of values for the variables so that the variables satisfy the constraints.
+
+**scope:** scope of $C(v_1, v_5)$ is $\{v_1, v_5\}$
+
+### Backtracking Search
+
+1. Get an unassigned variable
+2. Assign it a value in the domain
+3. Check if it violates any constraint, repeat (1) or (2)
+
+### Constraint Propagation
+
+#### Forward Checking
+
+1. If constraint $C$ only has $X$ unassigned, check for each value $v$ in $Dom[X]$  if $v$ violates contraint $C$, remove $v$ from $Dom[X]$ if True. 
+2. If $Dom[X] = \{\}$, return Domain Wiped Out
+3. Else, return ok
+
+<u>Intuition</u>:  If assigning a value to $Y$ leaves no legal assignment for $X$ where $X$ shares some constraint with $Y$, then we do not assign this value to $Y$.
+
+If we need to backtrack, we should restore all pruned values. 
+
+#### Minimum Remaining Value Heuristics (MRV)
+
+Always branch on the most constrained variable, or the variable with the fewest legal left values in its domain.
+
+#### Degree Heuristic
+
+Select the variable that is involved in the largest number of constraints with other unassigned variables.
+
+#### Generalized Arc Consistency (GAC)
+
+- A constraint $C(v_1, v_2, \dots, v_n)$ is <u>GAC w.r.t $v_i$</u> if and only if $\forall x \in Dom[v_i]$, there exist a domain value for $v_1, \dots, v_{i-1}, v_{i+1}, \dots, v_n$ that satisfy the constraint.
+
+- $C(v_1, v_2, \dots, v_n)$ is GAC if and only if it is GAC w.r.t every variable in the scope.
+- A CSP is GAC if and only if all constraints are GAC
+
+##### Algorithm
+
+1. Get a unassigned variable $X$
+2. For each $v$ in $Dom[X]$, assign a value to $X$ and put all constraints C with $X$ in its scope on a queue
+3. For each $C$ on the queue, check if assigning $X$ this value will DMO any variable $Y$ sharing constraint with $X$
+4. If so, then restore all pruned values and check the next value in $Dom[X]$
+
+Time Complexity: $\mathcal{O}(cd^3)$ where $c$ is the number of binary constraints, and $d$ is the max size of variable domain. 
+
+
+
+Can improve efficiency of GAC by keeping track of support, or the assignments to other variables that satisfies the constraints for a given value to $X$
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
